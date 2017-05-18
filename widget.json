@@ -1,0 +1,26 @@
+{
+  "name": "Validation Manager",
+  "package": "com.fliplet.validation-manager",
+  "version": "1.0.0",
+  "icon": "img/icon.png",
+  "tags": [],
+  "references": ["dataSourceId:dataSource"],
+  "provider_only": true,
+  "interface": {
+    "dependencies": [
+      "fliplet-core",
+      "fliplet-studio-ui",
+      "fliplet-datasources",
+      "bootstrap",
+      "tinymce"
+    ],
+    "assets": [
+      "js/interface.js",
+      "css/interface.css"
+    ]
+  },
+  "build": {
+    "dependencies": [],
+    "assets": []
+  }
+}

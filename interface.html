@@ -1,0 +1,179 @@
+<form class="form-horizontal">
+  
+  <div class="form-group clearfix">
+    <div class="col-sm-4 control-label">
+      <label>Which data source should results be saved to?</label>
+    </div>
+    <div class="col-sm-8">
+      <select name="dataSource" id="dataSource" class="form-control" required>
+        <option value="">-- Select data source</option>
+      </select>
+      <small>or just <a href="#" data-create-source>create a new data source</a></small>
+    </div>
+  </div>
+
+<div class="panel-group" id="accordion">
+<div class="panel panel-default" data-id="{{id}}">
+<div class="panel-heading">
+<h4 class="panel-title" data-toggle="collapse" data-parent="#accordion" data-target="#email-collapse">
+<span class="fa fa-chevron-down"></span>
+<span class="panel-title-text">Email</span>
+</h4>
+</div>
+<div id="email-collapse" class="panel-collapse collapse in">
+<div class="panel-body">
+      <div class="form-group clearfix">
+<div class="col-sm-4 control-label">
+<label for="linkLabel">To column</label>
+</div>
+<div class="col-sm-8">
+<input type="text" name="email-to" class="form-control" id="email-to" placeholder="Email address" required />
+</div>
+</div>
+
+<div class="form-group clearfix">
+<div class="col-sm-4 control-label">
+<label for="linkLabel">Match column</label>
+</div>
+<div class="col-sm-8">
+<input type="text" name="email-match" class="form-control" id="email-match" placeholder="Email address" required />
+</div>
+</div>
+
+<div class="form-group clearfix">
+<div class="col-sm-4 control-label">
+<label for="email-timeout">Timeout</label>
+</div>
+<div class="col-sm-8">
+<input type="text" name="email-timeout" class="form-control" id="email-timeout" placeholder="" required />
+</div>
+</div>
+
+<div class="form-group clearfix">
+<div class="col-sm-12 control-label">
+<label>Template</label>
+</div>
+<div class="col-sm-12">
+<textarea data-tinymce id="email-template" class="form-control"></textarea>
+</div>
+<div class="col-sm-12">
+<h2><small>How to use</small></h2>
+<p>Use the following to:</p>
+<ul>
+<li><code>\{{code}}</code> - insert the verification code <strong>(Required)</strong></li>
+<li><code>\{{timeout}}</code> - insert the expiration time of the verification code (in minutes)</li>
+</ul>
+</div>
+</div>      
+</div>
+</div>
+</div>
+
+<div class="panel panel-default" data-id="{{id}}">
+<div class="panel-heading">
+<h4 class="panel-title" data-toggle="collapse" data-parent="#accordion" data-target="#sms-collapse">
+<span class="fa fa-chevron-down"></span>
+<span class="panel-title-text">SMS</span>
+</h4>
+</div>
+<div id="sms-collapse" class="panel-collapse collapse in">
+<div class="panel-body">
+       <div class="form-group clearfix">
+        <div class="col-sm-4 control-label">
+          <label for="sms-to">To column</label>
+        </div>
+        <div class="col-sm-8">
+          <input type="text" name="sms-to" class="form-control" id="sms-to" placeholder="Phone Number" required />
+        </div>
+      </div>
+
+      <div class="form-group clearfix">
+        <div class="col-sm-4 control-label">
+          <label for="sms-match">Match column</label>
+        </div>
+        <div class="col-sm-8">
+          <input type="text" name="sms-match" class="form-control" id="sms-match" placeholder="Email address" required />
+        </div>
+      </div>
+
+      <div class="form-group clearfix">
+        <div class="col-sm-4 control-label">
+          <label for="sms-timeout">Timeout</label>
+        </div>
+        <div class="col-sm-8">
+          <input type="text" name="sms-timeout" class="form-control" id="sms-timeout" placeholder="30" required />
+        </div>
+      </div>
+
+      <div class="form-group clearfix">
+        <div class="col-sm-4 control-label">
+          <label for="sms-template">Template</label>
+        </div>
+        <div class="col-sm-8">
+          <input type="text" name="sms-template" class="form-control" id="sms-template" placeholder="Your code: {{code}}" required />
+        </div>
+      </div>      
+</div>
+</div>
+</div>
+</div>
+</div>
+</form>
+
+<template id="email-template-default">
+<style>body{background-color:#eee}</style>
+<table border="0" margin="0" cellpadding="15" cellspacing="0" style="border:0;font-family:helvetica,arial,sans-serif;width:100%;background-color:#eee">
+<tbody>
+<tr>
+<td style="text-align:center">
+<!--[if mso]>
+<center>
+<table><tr><td width="600">
+<![endif]-->
+<table align="center" border="0" margin="0" cellpadding="0" cellspacing="0" style="border:0;max-width:600px;text-align:left;background-color:#fff">
+<tbody>
+<tr>
+<td>
+<table border="0" margin="0" cellpadding="0" cellspacing="0" style="border:0">
+<tbody>
+<tr>
+<td style="width:15px;height:15px"></td>
+<td style="width:15px;height:15px"></td>
+<td style="width:15px;height:15px"></td>
+</tr>
+<tr>
+<td style="width:15px;height:15px"></td>
+<td>
+<h1 style="text-align:center;font-weight:normal;line-height:1.4;color:#666;font-size:24px">Verification code for<br><strong style="color:#333">\{{ appName }}</strong></h1>
+<h2 style="text-align:center;font-weight:normal;line-height:1.4;color:#666;font-size:24px">Your code is<br><strong style="color:#333">\{{ code }}</strong></h2>
+<p style="text-align:center;font-size:12px;color:#999">This code is only valid for 24 hours</p>
+<hr style="border-left:none;border-right:0;border-bottom:0;border-top:1px solid #ccc" />
+<p style="color:#333;line-height:1.6;font-size:14px">This email is sent to you from \{{ organisationName }}.</p>
+<p style="color:#333;line-height:1.6;font-size:14px"><strong>What is this code for?</strong> To verify you can access the registered email address and protect your account. Please enter the above code into your app.</p>
+<p style="color:#333;line-height:1.6;font-size:14px"><strong> Didn't request this code?</strong> Please ignore it. If you think someone is trying to use your details without permission or are concerned by this email please contact your app administrator.</p>
+<p style="color:#333;line-height:1.6;font-size:14px"><strong> Do you have further questions?</strong> please contact your app administrator.
+<hr style="border-left:none;border-right:0;border-bottom:0;border-top:1px solid #ccc" />
+<p style="color:#999;line-height:1.6;font-size:12px">This email is sent by <a href="https://fliplet.com">Fliplet</a>, an enterprise app platform used by <strong>\{{organisationName}}</strong> to manage their mobile and web apps. To find out more about Fliplet and our terms and conditions please visit <a href="https://fliplet.com">fliplet.com</a>.</p>
+</td>
+<td style="width:15px;height:15px"></td>
+</tr>
+<tr>
+<td style="width:15px;height:15px"></td>
+<td style="width:15px;height:15px"></td>
+<td style="width:15px;height:15px"></td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+<!--[if mso]>
+</td></tr></table>
+</center>
+<![endif]-->
+</td>
+</tr>
+</tbody>
+</table>
+</template>
