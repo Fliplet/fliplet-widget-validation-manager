@@ -132,6 +132,11 @@ function selectDataSource(id) {
   Fliplet.Widget.autosize();
 }
 
+
+$('.panel-collapse').on('shown.bs.collapse hidden.bs.collapse', function() {
+  Fliplet.Widget.autosize();
+});
+
 $dataSource.on('change', function() {
   if (!this.value) {
     dataSource = null;
