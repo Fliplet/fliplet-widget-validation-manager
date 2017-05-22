@@ -6,13 +6,17 @@
   "tags": [],
   "references": ["dataSourceId:dataSource"],
   "provider_only": true,
+  "providers": [
+    "com.fliplet.email-provider"
+  ],
   "interface": {
     "dependencies": [
       "fliplet-core",
       "fliplet-studio-ui",
       "fliplet-datasources",
       "bootstrap",
-      "tinymce"
+      "tinymce",
+      "lodash"
     ],
     "assets": [
       "js/interface.js",
