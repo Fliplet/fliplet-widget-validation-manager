@@ -37,7 +37,7 @@ Fliplet.Widget.onSaveRequest(function() {
 function selectDataSource(ds) {
   dataSource = ds;
   var sms = dataSource.definition && dataSource.definition.validation && dataSource.definition.validation.sms || {};
-  $('#sms-template').val(sms.text || defaultSmsTemplate);
+  $('#sms-template').val(sms.template || defaultSmsTemplate);
   $('#sms-expire').val(sms.expire || '');
 
   var email = dataSource.definition && dataSource.definition.validation && dataSource.definition.validation.email || {};
