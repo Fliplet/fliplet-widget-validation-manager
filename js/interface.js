@@ -2,146 +2,174 @@ var widgetInstanceId = $('[data-widget-id]').data('widget-id');
 var data = Fliplet.Widget.getData(widgetInstanceId) || {};
 
 var $dataSource = $("#dataSource");
+var $emailSettings = $('.email-settings');
+var $smsSettings = $('.sms-settings');
+
 var defaultEmailTemplate = $('#email-template-default').html();
+var defaultEmailSettings = {
+  subject: 'Validate your email address',
+  html: defaultEmailTemplate,
+  to: []
+};
+
 var defaultSmsTemplate = 'Your code: {{ code }}';
 var dataSources;
 var dataSource;
 
-var onTinyMceReady = new Promise(function(resolve) {
-  document.addEventListener('tinymce.init', function() {
-    resolve();
-  })
-});
-
-// TinyMCE INIT
-tinymce.init({
-  selector: '#email-template',
-  theme: 'modern',
-  plugins: [
-    'advlist lists link image charmap hr',
-    'searchreplace insertdatetime table textcolor colorpicker code'
-  ],
-  toolbar: 'formatselect | fontselect fontsizeselect | bold italic underline strikethrough | alignleft aligncenter alignright alignjustify | link | bullist numlist outdent indent | blockquote subscript superscript | table charmap hr | removeformat | code',
-  menubar: false,
-  statusbar: true,
-  inline: false,
-  resize: true,
-  min_height: 300,
-  setup: function (editor) {
-    editor.on('init', function (e) {
-      var customEvent = new CustomEvent(
-        'tinymce.init',
-        {
-          bubbles: true,
-          cancelable: true
-        }
-      );
-      document.dispatchEvent(customEvent);
-    });
-  }
-});  
+var emailProvider;
+var emailProviderResult;
 
 Fliplet.Widget.onSaveRequest(function() {
   if (!dataSource) {
-    return Fliplet.Widget.save({})
-      .then(function() {
-        return Fliplet.Widget.complete();
-      });
+    return Fliplet.Widget.save({});
   }
 
-  var validation = {
-    sms: {
-      text: $('#sms-template').val(),
-      expire: $('#sms-expire').val(),
-      toColumn: $('#sms-to').val(),
-      matchColumn: $('#sms-match').val()
-    },
-    email: {
-      text: tinymce.get('email-template').getContent(),
-      expire: $('#email-expire').val(),
-      toColumn: $('#email-to').val(),
-      matchColumn: $('#email-match').val()
-    }
+  if (emailProvider) {
+    return emailProvider.forwardSaveRequest();
   }
-  
-  // Update data source definitions 
-  var options = {
-    id: dataSource.id,
-    definition: { validation: validation }
-  };
-  Fliplet.DataSources.update(options)
-    .then(function() {
-      data = {
-        dataSourceId: dataSource.id,
-        sms : { matchColumn: $('#sms-match').val() },
-        email: { matchColumn: $('#email-match').val() },
-      } 
 
-      // Save data source id on the widget instance
-      Fliplet.Widget.save(data).then(function() {
-        Fliplet.Widget.complete();
-      });
-    })
+  return dsQueryProvider.forwardSaveRequest();
 });
-
-Fliplet.DataSources.get({ type: null })
-  .then(function (sources) {
-    dataSources = sources;
-    sources.forEach(function (source) {
-      $dataSource.append('<option value="' + source.id + '">' + source.name + '</option>');
-    });
-
-    // Select data source if there was one selected already
-    if (data.dataSourceId) {
-      $dataSource.val(data.dataSourceId);
-      $dataSource.change();
-    }
-  });
 
 /**
  * Set current data source and fill in fields 
  */
-function selectDataSource(id) {
-  var filteredDataSource = dataSources.filter(function (dataSource) {
-    return dataSource.id === Number(id);
-  });
-
-  if (!filteredDataSource.length) {
-    return;
-  }
-
-  dataSource = filteredDataSource[0];
-  
+function selectDataSource(ds) {
+  dataSource = ds;
   var sms = dataSource.definition && dataSource.definition.validation && dataSource.definition.validation.sms || {};
-  $('#sms-template').val(sms.text || defaultSmsTemplate);
+  $('#sms-template').val(sms.template || defaultSmsTemplate);
   $('#sms-expire').val(sms.expire || '');
-  $('#sms-to').val(sms.toColumn || '');
-  $('#sms-match').val(sms.matchColumn || '');
 
   var email = dataSource.definition && dataSource.definition.validation && dataSource.definition.validation.email || {};
-  onTinyMceReady.then(function() {
-    tinymce.get('email-template').setContent(email.text || defaultEmailTemplate);
-  });
-  
   $('#email-expire').val(email.expire || '');
-  $('#email-to').val(email.toColumn || '');
-  $('#email-match').val(email.matchColumn || '');
   
-  // And show the types
-  $('#accordion').show()
   Fliplet.Widget.autosize();
 }
 
+var dsQueryData = {
+  settings: {
+    dataSourceLabel: 'Select a data source',
+    modesDescription: 'What method would you like to use to send the code?',
+    modes: [
+      {
+        label: 'SMS',
+        filters: false,
+        columns: [
+          {
+            key: 'smsMatch',
+            label: 'Select the column to match',
+            type: 'single'
+          },
+          {
+            key: 'smsTo',
+            label: 'Select the column to send',
+            type: 'single'
+          }
+        ]
+      },
+      {
+        label: 'Email',
+        filters: false,
+        columns: [
+          {
+            key: 'emailMatch',
+            label: 'Select the column to match',
+            type: 'single'
+          },
+          {
+            key: 'emailTo',
+            label: 'Select the column to send',
+            type: 'single'
+          }
+        ]
+      }
+    ]
+  },
+  result: data.dataSourceQuery
+};
 
-$('.panel-collapse').on('shown.bs.collapse hidden.bs.collapse', function() {
-  Fliplet.Widget.autosize();
-});
+// Open data source query provider inline
+var dsQueryProvider = Fliplet.Widget.open('com.fliplet.data-source-query', {
+  selector: '.data-source-query-provider',
+  data: dsQueryData,
+  onEvent: function (event, data) {
+    if (event === 'mode-changed') {
+      switch (data.value) {
+        case null:
+        case 0:
+          $emailSettings.addClass('hidden');
+          $smsSettings.removeClass('hidden');
+          break;
+        case 1:
+          $emailSettings.removeClass('hidden');
+          $smsSettings.addClass('hidden');
+          break;
+          
+        default:
+          break;
+      }
 
-$dataSource.on('change', function() {
-  if (!this.value) {
-    dataSource = null;
-    return $('#accordion').hide();
+      return true; // Stop propagation up to studio or parent components
+    }
+
+    if (event === 'data-source-changed') {
+      selectDataSource(data);
+
+      return true; // Stop propagation up to studio or parent components
+    }
   }
-
-  selectDataSource(this.value);
 });
+
+dsQueryProvider.then(function onForwardDsQueryProvider(result) {
+    var validation = {
+      sms: {
+        toColumn: result.data.columns.smsTo,
+        matchColumn: result.data.columns.smsMatch,
+        template: $('#sms-template').val(),
+        expire: $('#sms-expire').val(),
+      },
+      email: {
+        toColumn: result.data.columns.emailTo,
+        matchColumn: result.data.columns.emailMatch,
+        template: emailProviderResult || defaultEmailSettings,
+        expire: $('#email-expire').val(),
+      }
+    }
+
+      // Update data source definitions 
+    var options = {
+      id: result.data.dataSourceId,
+      definition: { validation: validation }
+    };
+    Fliplet.DataSources.update(options)
+      .then(function() {
+        data = {
+          type: result.data.selectedModeIdx === 1 ? 'email' : 'sms',
+          dataSourceQuery: result.data
+        } 
+
+        // Save
+        Fliplet.Widget.save(data);
+      })
+  });
+
+// Click to edit email template should open email provider
+$('.show-email-provider').on('click', function() {
+  var emailProviderData = dataSource.definition && dataSource.definition.validation && dataSource.definition.validation.email && dataSource.definition.validation.email.template || defaultEmailSettings;
+  emailProvider = Fliplet.Widget.open('com.fliplet.email-provider', {
+    data: emailProviderData 
+  });
+
+  emailProvider.then(function onForwardEmailProvider(result) {
+    emailProvider = null;
+    emailProviderResult = result.data;
+    Fliplet.Widget.autosize();
+  }); 
+});
+
+// Initialize data. SMS by default
+if (data.type === 'email') {
+  $emailSettings.removeClass('hidden');
+} else {
+  $smsSettings.removeClass('hidden');
+}

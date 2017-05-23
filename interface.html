@@ -1,121 +1,37 @@
 <form class="form-horizontal">
-  
-  <div class="form-group clearfix">
+  <div class="form-group data-source-query-provider"></div>
+  <div class="email-settings hidden">
+    <div class="form-group clearfix">
     <div class="col-sm-4 control-label">
-      <label>Which data source should results be saved to?</label>
+    <label for="email-expire">Timeout</label>
     </div>
     <div class="col-sm-8">
-      <select name="dataSource" id="dataSource" class="form-control" required>
-        <option value="">-- Select data source</option>
-      </select>
+    <input type="text" name="email-expire" class="form-control" id="email-expire" placeholder="" required />
     </div>
+    </div>
+
+    <a class="btn btn-primary show-email-provider">Setup Email Template</a>  
   </div>
 
-<div class="panel-group" id="accordion">
-<div class="panel panel-default" data-id="{{id}}">
-<div class="panel-heading">
-<h4 class="panel-title" data-toggle="collapse" data-parent="#accordion" data-target="#email-collapse">
-<span class="fa fa-chevron-down"></span>
-<span class="panel-title-text">Email</span>
-</h4>
-</div>
-<div id="email-collapse" class="panel-collapse collapse in">
-<div class="panel-body">
-      <div class="form-group clearfix">
-<div class="col-sm-4 control-label">
-<label for="linkLabel">To column</label>
-</div>
-<div class="col-sm-8">
-<input type="text" name="email-to" class="form-control" id="email-to" placeholder="Email address" required />
-</div>
-</div>
-
-<div class="form-group clearfix">
-<div class="col-sm-4 control-label">
-<label for="linkLabel">Match column</label>
-</div>
-<div class="col-sm-8">
-<input type="text" name="email-match" class="form-control" id="email-match" placeholder="Email address" required />
-</div>
-</div>
-
-<div class="form-group clearfix">
-<div class="col-sm-4 control-label">
-<label for="email-timeout">Timeout</label>
-</div>
-<div class="col-sm-8">
-<input type="text" name="email-timeout" class="form-control" id="email-timeout" placeholder="" required />
-</div>
-</div>
-
-<div class="form-group clearfix">
-<div class="col-sm-12 control-label">
-<label>Template</label>
-</div>
-<div class="col-sm-12">
-<textarea data-tinymce id="email-template" class="form-control"></textarea>
-</div>
-<div class="col-sm-12">
-<h2><small>How to use</small></h2>
-<p>Use the following to:</p>
-<ul>
-<li><code>\{{code}}</code> - insert the verification code <strong>(Required)</strong></li>
-<li><code>\{{timeout}}</code> - insert the expiration time of the verification code (in minutes)</li>
-</ul>
-</div>
-</div>      
-</div>
-</div>
-</div>
-
-<div class="panel panel-default" data-id="{{id}}">
-<div class="panel-heading">
-<h4 class="panel-title" data-toggle="collapse" data-parent="#accordion" data-target="#sms-collapse">
-<span class="fa fa-chevron-down"></span>
-<span class="panel-title-text">SMS</span>
-</h4>
-</div>
-<div id="sms-collapse" class="panel-collapse collapse in">
-<div class="panel-body">
-       <div class="form-group clearfix">
-        <div class="col-sm-4 control-label">
-          <label for="sms-to">To column</label>
-        </div>
-        <div class="col-sm-8">
-          <input type="text" name="sms-to" class="form-control" id="sms-to" placeholder="Phone Number" required />
-        </div>
+  <div class="sms-settings hidden">
+    <div class="form-group clearfix">
+      <div class="col-sm-4 control-label">
+        <label for="sms-expire">Timeout</label>
       </div>
-
-      <div class="form-group clearfix">
-        <div class="col-sm-4 control-label">
-          <label for="sms-match">Match column</label>
-        </div>
-        <div class="col-sm-8">
-          <input type="text" name="sms-match" class="form-control" id="sms-match" placeholder="Email address" required />
-        </div>
+      <div class="col-sm-8">
+        <input type="text" name="sms-expire" class="form-control" id="sms-expire" placeholder="30" required />
       </div>
+    </div>
 
-      <div class="form-group clearfix">
-        <div class="col-sm-4 control-label">
-          <label for="sms-timeout">Timeout</label>
-        </div>
-        <div class="col-sm-8">
-          <input type="text" name="sms-timeout" class="form-control" id="sms-timeout" placeholder="30" required />
-        </div>
+    <div class="form-group clearfix">
+      <div class="col-sm-4 control-label">
+        <label for="sms-template">Template</label>
       </div>
-
-      <div class="form-group clearfix">
-        <div class="col-sm-4 control-label">
-          <label for="sms-template">Template</label>
-        </div>
-        <div class="col-sm-8">
-          <input type="text" name="sms-template" class="form-control" id="sms-template" placeholder="Your code: {{code}}" required />
-        </div>
-      </div>      
-</div>
-</div>
-</div>
-</div>
+      <div class="col-sm-8">
+        <input type="text" name="sms-template" class="form-control" id="sms-template" placeholder="Your code: {{code}}" required />
+      </div>
+    </div>      
+  </div>
 </div>
 </form>
 
