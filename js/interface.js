@@ -163,6 +163,7 @@ $('.show-email-provider').on('click', function() {
   emailProvider.then(function onForwardEmailProvider(result) {
     emailProvider = null;
     emailProviderResult = result.data;
+    Fliplet.Widget.autosize();
   }); 
 });
 
