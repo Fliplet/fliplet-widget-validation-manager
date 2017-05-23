@@ -17,14 +17,11 @@ var dataSources;
 var dataSource;
 
 var emailProvider;
-var emailProviderResult = {};
+var emailProviderResult;
 
 Fliplet.Widget.onSaveRequest(function() {
   if (!dataSource) {
-    return Fliplet.Widget.save({})
-      .then(function() {
-        return Fliplet.Widget.complete();
-      });
+    return Fliplet.Widget.save({});
   }
 
   if (emailProvider) {
@@ -100,12 +97,10 @@ var dsQueryProvider = Fliplet.Widget.open('com.fliplet.data-source-query', {
       switch (data.value) {
         case null:
         case 0:
-          data.type = 'sms',
           $emailSettings.addClass('hidden');
           $smsSettings.removeClass('hidden');
           break;
         case 1:
-          data.type = 'email';
           $emailSettings.removeClass('hidden');
           $smsSettings.addClass('hidden');
           break;
@@ -130,11 +125,13 @@ dsQueryProvider.then(function onForwardDsQueryProvider(result) {
       sms: {
         toColumn: result.data.columns.smsTo,
         matchColumn: result.data.columns.smsMatch,
-        text: $('#sms-template').val(),
+        template: $('#sms-template').val(),
         expire: $('#sms-expire').val(),
       },
       email: {
-        emailProvider: emailProviderResult || defaultEmailSettings,
+        toColumn: result.data.columns.emailTo,
+        matchColumn: result.data.columns.emailMatch,
+        template: emailProviderResult || defaultEmailSettings,
         expire: $('#email-expire').val(),
       }
     }
@@ -147,14 +144,12 @@ dsQueryProvider.then(function onForwardDsQueryProvider(result) {
     Fliplet.DataSources.update(options)
       .then(function() {
         data = {
+          type: result.data.selectedModeIdx === 1 ? 'email' : 'sms',
           dataSourceQuery: result.data
         } 
 
-        // Save data source id on the widget instance
-        Fliplet.Widget.save(data).then(function() {
-          Fliplet.Studio.emit('reload-page-preview');
-          Fliplet.Widget.complete();
-        });
+        // Save
+        Fliplet.Widget.save(data);
       })
   });
 
@@ -171,10 +166,9 @@ $('.show-email-provider').on('click', function() {
   }); 
 });
 
+// Initialize data. SMS by default
 if (data.type === 'email') {
   $emailSettings.removeClass('hidden');
-}
-
-if (data.type === 'sms') {
+} else {
   $smsSettings.removeClass('hidden');
 }
