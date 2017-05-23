@@ -2,6 +2,7 @@ var widgetInstanceId = $('[data-widget-id]').data('widget-id');
 var data = Fliplet.Widget.getData(widgetInstanceId) || {};
 
 var $dataSource = $("#dataSource");
+var $expireTimeoutSettings = $('.expire-timeout-settings');
 var $emailSettings = $('.email-settings');
 var $smsSettings = $('.sms-settings');
 
@@ -13,6 +14,7 @@ var defaultEmailSettings = {
 };
 
 var defaultSmsTemplate = 'Your code: {{ code }}';
+var defaultExpireTimeout = 60;
 var dataSources;
 var dataSource;
 
@@ -32,53 +34,44 @@ Fliplet.Widget.onSaveRequest(function() {
 });
 
 /**
- * Set current data source and fill in fields 
+ * Set current data source and fill in fields
  */
 function selectDataSource(ds) {
   dataSource = ds;
-  var sms = dataSource.definition && dataSource.definition.validation && dataSource.definition.validation.sms || {};
-  $('#sms-template').val(sms.template || defaultSmsTemplate);
-  $('#sms-expire').val(sms.expire || '');
 
-  var email = dataSource.definition && dataSource.definition.validation && dataSource.definition.validation.email || {};
-  $('#email-expire').val(email.expire || '');
-  
+  var sms = dataSource.definition && dataSource.definition.validation && dataSource.definition.validation.sms || {};
+  // SMS and email validations use the same expiration values
+  // Therefore the value only needs to be restored from the SMS configuration
+  $('#expire-timeout').val(sms.expire || defaultExpireTimeout);
+  $('#sms-template').val(sms.template || defaultSmsTemplate);
+
   Fliplet.Widget.autosize();
 }
 
 var dsQueryData = {
   settings: {
-    dataSourceLabel: 'Select a data source',
-    modesDescription: 'What method would you like to use to send the code?',
-    modes: [
-      {
-        label: 'SMS',
+    dataSourceLabel: 'Select the data source containing the user information',
+    modesDescription: 'Select a verification method',
+    modes: [{
+        label: 'By email',
         filters: false,
-        columns: [
-          {
+        columns: [{
+          key: 'emailMatch',
+          label: 'Select the column with the email address',
+          type: 'single'
+        }]
+      },
+      {
+        label: 'By SMS',
+        filters: false,
+        columns: [{
             key: 'smsMatch',
-            label: 'Select the column to match',
+            label: 'Select the column with the email address',
             type: 'single'
           },
           {
             key: 'smsTo',
-            label: 'Select the column to send',
-            type: 'single'
-          }
-        ]
-      },
-      {
-        label: 'Email',
-        filters: false,
-        columns: [
-          {
-            key: 'emailMatch',
-            label: 'Select the column to match',
-            type: 'single'
-          },
-          {
-            key: 'emailTo',
-            label: 'Select the column to send',
+            label: 'Select the column with the phone number (where the SMS will be sent to)',
             type: 'single'
           }
         ]
@@ -92,20 +85,20 @@ var dsQueryData = {
 var dsQueryProvider = Fliplet.Widget.open('com.fliplet.data-source-query', {
   selector: '.data-source-query-provider',
   data: dsQueryData,
-  onEvent: function (event, data) {
+  onEvent: function(event, data) {
     if (event === 'mode-changed') {
       switch (data.value) {
-        case null:
         case 0:
-          $emailSettings.addClass('hidden');
-          $smsSettings.removeClass('hidden');
-          break;
-        case 1:
+        case null:
+        default:
+          // Email
           $emailSettings.removeClass('hidden');
           $smsSettings.addClass('hidden');
           break;
-          
-        default:
+        case 1:
+          // SMS
+          $emailSettings.addClass('hidden');
+          $smsSettings.removeClass('hidden');
           break;
       }
 
@@ -121,50 +114,52 @@ var dsQueryProvider = Fliplet.Widget.open('com.fliplet.data-source-query', {
 });
 
 dsQueryProvider.then(function onForwardDsQueryProvider(result) {
-    var validation = {
-      sms: {
-        toColumn: result.data.columns.smsTo,
-        matchColumn: result.data.columns.smsMatch,
-        template: $('#sms-template').val(),
-        expire: $('#sms-expire').val(),
-      },
-      email: {
-        toColumn: result.data.columns.emailTo,
-        matchColumn: result.data.columns.emailMatch,
-        template: emailProviderResult || defaultEmailSettings,
-        expire: $('#email-expire').val(),
-      }
+  var validation = {
+    sms: {
+      toColumn: result.data.columns.smsTo,
+      matchColumn: result.data.columns.smsMatch,
+      template: $('#sms-template').val(),
+      expire: $('#expire-timeout').val(),
+    },
+    email: {
+      toColumn: result.data.columns.emailMatch,
+      matchColumn: result.data.columns.emailMatch,
+      template: emailProviderResult || defaultEmailSettings,
+      expire: $('#expire-timeout').val(),
     }
+  }
 
-      // Update data source definitions 
-    var options = {
-      id: result.data.dataSourceId,
-      definition: { validation: validation }
-    };
-    Fliplet.DataSources.update(options)
-      .then(function() {
-        data = {
-          type: result.data.selectedModeIdx === 1 ? 'email' : 'sms',
-          dataSourceQuery: result.data
-        } 
+  // Update data source definitions
+  var options = {
+    id: result.data.dataSourceId,
+    definition: {
+      validation: validation
+    }
+  };
+  Fliplet.DataSources.update(options)
+    .then(function() {
+      data = {
+        type: result.data.selectedModeIdx === 1 ? 'sms' : 'email',
+        dataSourceQuery: result.data
+      }
 
-        // Save
-        Fliplet.Widget.save(data);
-      })
-  });
+      // Save
+      Fliplet.Widget.save(data);
+    })
+});
 
 // Click to edit email template should open email provider
 $('.show-email-provider').on('click', function() {
   var emailProviderData = dataSource.definition && dataSource.definition.validation && dataSource.definition.validation.email && dataSource.definition.validation.email.template || defaultEmailSettings;
   emailProvider = Fliplet.Widget.open('com.fliplet.email-provider', {
-    data: emailProviderData 
+    data: emailProviderData
   });
 
   emailProvider.then(function onForwardEmailProvider(result) {
     emailProvider = null;
     emailProviderResult = result.data;
     Fliplet.Widget.autosize();
-  }); 
+  });
 });
 
 // Initialize data. SMS by default
@@ -173,3 +168,4 @@ if (data.type === 'email') {
 } else {
   $smsSettings.removeClass('hidden');
 }
+$expireTimeoutSettings.removeClass('hidden');
