@@ -164,7 +164,7 @@ $('.show-email-provider').on('click', function() {
 
 // Initialize data. SMS by default
 if (data.type === 'sms') {
-  smsSettings.removeClass('hidden');
+  $smsSettings.removeClass('hidden');
 } else {
   $emailSettings.removeClass('hidden');
 }
