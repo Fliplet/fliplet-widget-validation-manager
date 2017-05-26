@@ -13,7 +13,7 @@ var defaultEmailSettings = {
   to: []
 };
 
-var defaultSmsTemplate = 'Your code: {{ code }}';
+var defaultSmsTemplate = 'Your code: {{ code }} (it will expire in {{ expire }} minutes)';
 var defaultExpireTimeout = 60;
 var dataSources;
 var dataSource;
@@ -52,7 +52,7 @@ var dsQueryData = {};
 if (data.type === 'sms') {
   dsQueryData = {
     settings: {
-      dataSourceLabel: 'Select a data source',
+      dataSourceLabel: 'Select the data source containing the user information',
       filters: false,
       columns: [{
           key: 'smsMatch',
