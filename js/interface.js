@@ -138,7 +138,7 @@ dsQueryProvider.then(function onForwardDsQueryProvider(result) {
   var validation = dataSource.definition.validation || {};
 
   // Let's update only the selected verification type on the datasurce settings
-  switch(data.type) {
+  switch (data.type) {
     case 'sms':
       validation.sms = {
         toColumn: result.data.columns.smsTo,
@@ -162,7 +162,7 @@ dsQueryProvider.then(function onForwardDsQueryProvider(result) {
       // TODO: better validation eg: shouldn't contain spaces
       var domains = $('#domains').val().split(',').map(function(domain) {
         return domain.trim();
-      }) 
+      })
 
       validation.domain = {
         toColumn: result.data.columns.domainMatch,
@@ -197,6 +197,14 @@ dsQueryProvider.then(function onForwardDsQueryProvider(result) {
 // Click to edit email template should open email provider
 $('.show-email-provider').on('click', function() {
   var emailProviderData = dataSource.definition && dataSource.definition.validation && dataSource.definition.validation.email && dataSource.definition.validation.email.template || defaultEmailSettings;
+  emailProviderData.options = {
+    variables: {
+      code: 'Insert the verification code <strong>(Required)</strong>',
+      appName: 'Insert your app name',
+      organisationName: 'insert your organisation name',
+      expire: 'Insert the expiration time of the verification code (in minutes)'
+    }
+  };
   emailProvider = Fliplet.Widget.open('com.fliplet.email-provider', {
     data: emailProviderData
   });
