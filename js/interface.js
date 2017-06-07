@@ -194,6 +194,7 @@ $('#email-domain').on('change', function() {
   } else {
     $('.email-domains-input').addClass('hidden');
   }
+  Fliplet.Widget.autosize();
 });
 
 // Initialize data.
