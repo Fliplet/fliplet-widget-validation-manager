@@ -47,7 +47,7 @@ function selectDataSource(ds) {
   $('#sms-template').val(sms.template || defaultSmsTemplate);
 
   if (email.domain) {
-    $('#email-domain').prop('checked', true);
+    $('#email-domain').prop('checked', true).trigger('change');
     $('#email-domains').val(email.domains.join(', '));
   }
 
@@ -62,15 +62,16 @@ switch (data.type) {
         dataSourceLabel: 'Select the data source containing the user information',
         filters: false,
         columns: [{
-          key: 'smsMatch',
-          label: 'Select the column with the email address',
-          type: 'single'
-        },
-        {
-          key: 'smsTo',
-          label: 'Select the column with the phone number (where the SMS will be sent to)',
-          type: 'single'
-        }]
+            key: 'smsMatch',
+            label: 'Select the column with the email address',
+            type: 'single'
+          },
+          {
+            key: 'smsTo',
+            label: 'Select the column with the phone number (where the SMS will be sent to)',
+            type: 'single'
+          }
+        ]
       },
       result: data.dataSourceQuery
     };
@@ -117,7 +118,7 @@ dsQueryProvider.then(function onForwardDsQueryProvider(result) {
   var validation = dataSource.definition.validation || {};
 
   // Let's update only the selected verification type on the datasurce settings
-  switch(data.type) {
+  switch (data.type) {
     case 'sms':
       validation.sms = {
         toColumn: result.data.columns.smsTo,
@@ -132,13 +133,13 @@ dsQueryProvider.then(function onForwardDsQueryProvider(result) {
       var domains = [];
       var domain = $('#email-domain').is(":checked");
       var domainsString = $('#email-domains').val().trim();
-      
+
       if (domainsString) {
         var domains = domainsString.split(',').map(function(domain) {
           return domain.trim();
         });
       }
-      
+
       validation.email = {
         toColumn: result.data.columns.emailMatch,
         matchColumn: result.data.columns.emailMatch,
@@ -177,6 +178,14 @@ $('.show-email-provider').on('click', function() {
     emailProviderResult = result.data;
     Fliplet.Widget.autosize();
   });
+});
+
+$('#email-domain').on('change', function() {
+  if ($(this).is(':checked')) {
+    $('.email-domains-input').removeClass('hidden');
+  } else {
+    $('.email-domains-input').addClass('hidden');
+  }
 });
 
 // Initialize data.
