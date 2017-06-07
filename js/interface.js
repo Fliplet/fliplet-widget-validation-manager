@@ -40,21 +40,28 @@ function selectDataSource(ds) {
   dataSource = ds;
 
   var sms = dataSource.definition && dataSource.definition.validation && dataSource.definition.validation.sms || {};
+  var email = dataSource.definition && dataSource.definition.validation && dataSource.definition.validation.email || {};
   // SMS and email validations use the same expiration values
   // Therefore the value only needs to be restored from the SMS configuration
   $('#expire-timeout').val(sms.expire || defaultExpireTimeout);
   $('#sms-template').val(sms.template || defaultSmsTemplate);
 
+  if (email.domain) {
+    $('#email-domain').prop('checked', true);
+    $('#email-domains').val(email.domains.join(', '));
+  }
+
   Fliplet.Widget.autosize();
 }
 
 var dsQueryData = {};
-if (data.type === 'sms') {
-  dsQueryData = {
-    settings: {
-      dataSourceLabel: 'Select the data source containing the user information',
-      filters: false,
-      columns: [{
+switch (data.type) {
+  case 'sms':
+    dsQueryData = {
+      settings: {
+        dataSourceLabel: 'Select the data source containing the user information',
+        filters: false,
+        columns: [{
           key: 'smsMatch',
           label: 'Select the column with the email address',
           type: 'single'
@@ -63,38 +70,29 @@ if (data.type === 'sms') {
           key: 'smsTo',
           label: 'Select the column with the phone number (where the SMS will be sent to)',
           type: 'single'
-        }
-      ]
-    },
-    result: data.dataSourceQuery
-  };
-} else {
-  dsQueryData = {
-    settings: {
-      dataSourceLabel: 'Select the data source containing the user information',
-      modesDescription: 'Select a verification method',
-      modes: [{
-          label: 'By email',
-          filters: false,
-          columns: [{
-            key: 'emailMatch',
-            label: 'Select the column with the email address',
-            type: 'single'
-          }]
-        },
-        {
-          label: 'By domain whitelisting',
-          filters: false,
-          columns: [{
-            key: 'domainMatch',
-            label: 'Select the column with the email address',
-            type: 'single'
-          }]
-        }
-      ]
-    },
-    result: data.dataSourceQuery
-  };
+        }]
+      },
+      result: data.dataSourceQuery
+    };
+    break;
+
+  case 'email':
+    dsQueryData = {
+      settings: {
+        dataSourceLabel: 'Select the data source containing the user information',
+        filters: false,
+        columns: [{
+          key: 'emailMatch',
+          label: 'Select the column with the email address',
+          type: 'single'
+        }]
+      },
+      result: data.dataSourceQuery
+    };
+    break;
+
+  default:
+    break;
 }
 
 // Open data source query provider inline
@@ -102,25 +100,6 @@ var dsQueryProvider = Fliplet.Widget.open('com.fliplet.data-source-query', {
   selector: '.data-source-query-provider',
   data: dsQueryData,
   onEvent: function(event, data) {
-    if (event === 'mode-changed') {
-      switch (data.value) {
-        case 0:
-        case null:
-        default:
-          // Email
-          $emailSettings.removeClass('hidden');
-          $smsSettings.addClass('hidden');
-          break;
-        case 1:
-          // SMS
-          $emailSettings.addClass('hidden');
-          $smsSettings.removeClass('hidden');
-          break;
-      }
-
-      return true; // Stop propagation up to studio or parent components
-    }
-
     if (event === 'data-source-changed') {
       selectDataSource(data);
 
@@ -149,27 +128,24 @@ dsQueryProvider.then(function onForwardDsQueryProvider(result) {
       break;
 
     case 'email':
+      // Domains should be comma separated
+      var domains = [];
+      var domain = $('#email-domain').is(":checked");
+      var domainsString = $('#email-domains').val().trim();
+      
+      if (domainsString) {
+        var domains = domainsString.split(',').map(function(domain) {
+          return domain.trim();
+        });
+      }
+      
       validation.email = {
         toColumn: result.data.columns.emailMatch,
         matchColumn: result.data.columns.emailMatch,
         template: emailProviderResult || defaultEmailSettings,
         expire: $('#expire-timeout').val(),
-      }
-      break;
-
-    case 'domain':
-      // Domains should be comma separated
-      // TODO: better validation eg: shouldn't contain spaces
-      var domains = $('#domains').val().split(',').map(function(domain) {
-        return domain.trim();
-      }) 
-
-      validation.domain = {
-        toColumn: result.data.columns.domainMatch,
-        matchColumn: result.data.columns.domainMatch,
-        template: emailProviderResult || defaultEmailSettings,
-        domains: domains,
-        expire: $('#expire-timeout').val(),
+        domain: domain,
+        domains: domains
       }
       break;
   }
@@ -183,11 +159,6 @@ dsQueryProvider.then(function onForwardDsQueryProvider(result) {
   Fliplet.DataSources.update(options)
     .then(function() {
       data.dataSourceQuery = result.data;
-
-      // Email verification type is choosed on ds query provider
-      if (data.type !== 'sms') {
-        data.type = result.data.selectedModeIdx === 1 ? 'domain' : 'email';
-      }
 
       // Save
       Fliplet.Widget.save(data);
@@ -208,7 +179,7 @@ $('.show-email-provider').on('click', function() {
   });
 });
 
-// Initialize data. SMS by default
+// Initialize data.
 if (data.type === 'sms') {
   $smsSettings.removeClass('hidden');
 } else {
