@@ -170,12 +170,15 @@ dsQueryProvider.then(function onForwardDsQueryProvider(result) {
 $('.show-email-provider').on('click', function() {
   var emailProviderData = dataSource.definition && dataSource.definition.validation && dataSource.definition.validation.email && dataSource.definition.validation.email.template || defaultEmailSettings;
   emailProviderData.options = {
-    variables: {
+    usage: {
       code: 'Insert the verification code <strong>(Required)</strong>',
       appName: 'Insert your app name',
       organisationName: 'insert your organisation name',
       expire: 'Insert the expiration time of the verification code (in minutes)'
-    }
+    },
+    hideTo: true,
+    hideBCC: true,
+    hideCC: true
   };
   emailProvider = Fliplet.Widget.open('com.fliplet.email-provider', {
     data: emailProviderData
