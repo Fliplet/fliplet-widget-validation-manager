@@ -78,6 +78,7 @@ switch (data.type) {
     break;
 
   case 'email':
+  default:
     dsQueryData = {
       settings: {
         dataSourceLabel: 'Select the data source containing the user information',
@@ -90,9 +91,6 @@ switch (data.type) {
       },
       result: data.dataSourceQuery
     };
-    break;
-
-  default:
     break;
 }
 
