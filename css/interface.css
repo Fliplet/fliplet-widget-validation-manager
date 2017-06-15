@@ -213,3 +213,7 @@ label {
   border-left: 1px solid #e2e2e2;
   padding: 10px;
 }
+
+.email-domains-input {
+  margin-top: 10px;
+}
