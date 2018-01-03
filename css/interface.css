@@ -25,30 +25,8 @@ body {
   color: #14505e;
 }
 
-label {
-  font-weight: normal;
-  color: #14505e;
-}
-
 #link-action .form-group {
   margin-bottom: 0;
-}
-
-.form-control {
-  border-radius: 6px;
-  border: 1px solid #e4e9eb;
-  color: #333;
-  height: 44px;
-  line-height: 44px;
-  padding: 0 15px;
-  -webkit-box-shadow: none;
-  box-shadow: none;
-}
-
-.form-control:focus {
-  border-color: #00abd2;
-  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 8px rgba(0, 171, 210, .6);
-  box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 8px rgba(0, 171, 210, .6);
 }
 
 .form-group .btn-default {
@@ -126,7 +104,6 @@ label {
   -webkit-box-shadow: none;
   box-shadow: none;
   border: none;
-  border-radius: 0;
   margin-bottom: 10px;
 }
 
