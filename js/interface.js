@@ -109,7 +109,7 @@ var dsQueryProvider = Fliplet.Widget.open('com.fliplet.data-source-query', {
 
 dsQueryProvider.then(function onForwardDsQueryProvider(result) {
   // If there is no data source just save it although not valid config
-  if (!dataSource || !dataSource.value) {
+  if (!dataSource) {
     Fliplet.Widget.save();
   }
 
