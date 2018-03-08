@@ -43,7 +43,7 @@ function selectDataSource(ds) {
   var email = dataSource.definition && dataSource.definition.validation && dataSource.definition.validation.email || {};
   // SMS and email validations use the same expiration values
   // Therefore the value only needs to be restored from the SMS configuration
-  $('#expire-timeout').val(sms.expire || defaultExpireTimeout);
+  $('#expire-timeout').val(sms.expire || email.expire || defaultExpireTimeout);
   $('#sms-template').val(sms.template || defaultSmsTemplate);
 
   if (email.domain) {
