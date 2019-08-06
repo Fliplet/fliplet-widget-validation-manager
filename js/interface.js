@@ -8,7 +8,7 @@ var $smsSettings = $('.sms-settings');
 
 var defaultEmailTemplate = $('#email-template-default').html();
 var defaultEmailSettings = {
-  subject: 'Validate your email address',
+  subject: 'Verify your email address',
   html: defaultEmailTemplate,
   to: []
 };
@@ -19,7 +19,6 @@ var dataSources;
 var dataSource;
 
 var emailProvider;
-var emailProviderResult;
 
 Fliplet.Widget.onSaveRequest(function() {
   if (!dataSource) {
@@ -101,7 +100,6 @@ var dsQueryProvider = Fliplet.Widget.open('com.fliplet.data-source-query', {
   onEvent: function(event, data) {
     if (event === 'data-source-changed') {
       selectDataSource(data);
-
       return true; // Stop propagation up to studio or parent components
     }
   }
@@ -141,7 +139,7 @@ dsQueryProvider.then(function onForwardDsQueryProvider(result) {
       validation.email = {
         toColumn: result.data.columns.emailMatch,
         matchColumn: result.data.columns.emailMatch,
-        template: emailProviderResult || defaultEmailSettings,
+        template: defaultEmailSettings,
         expire: $('#expire-timeout').val(),
         domain: domain,
         domains: domains
@@ -181,11 +179,17 @@ $('.show-email-provider').on('click', function() {
   emailProvider = Fliplet.Widget.open('com.fliplet.email-provider', {
     data: emailProviderData
   });
+  Fliplet.Studio.emit('widget-save-label-update', {
+    text: 'Save'
+  });
 
   emailProvider.then(function onForwardEmailProvider(result) {
     emailProvider = null;
-    emailProviderResult = result.data;
+    dataSource.definition.validation.email.template = result.data;
     Fliplet.Widget.autosize();
+    Fliplet.Studio.emit('widget-save-label-update', {
+      text: 'Save & Close'
+    });
   });
 });
 
