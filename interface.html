@@ -4,11 +4,17 @@
     <div class="col-sm-4 control-label">
       <label for="expire-timeout">Verification code will expire after</label>
     </div>
-    <div class="col-sm-8">
-      <div class="input-group">
-        <input type="number" name="expire-timeout" class="form-control" id="expire-timeout" placeholder="Enter number of minutes" required />
-        <div class="input-group-addon">minutes</div>
-      </div>
+    <div class="col-xs-7 col-sm-5">
+      <input type="number" name="expire-timeout" class="form-control" id="expire-timeout" placeholder="Enter number of minutes" required />
+    </div>
+    <div class="col-xs-5 col-sm-3">
+      <select name="expire-timeout" id="time-value" class="form-control custom-chevron">
+        <option value="1">minutes</option>
+        <option value="60">hours</option>
+        <option value="1440">days</option>
+        <option value="10080">weeks</option>
+      </select>
+      <i class="fa fa-chevron-down"></i>
     </div>
   </div>
 

@@ -142,3 +142,21 @@ body {
 .email-domains-input {
   margin-top: 10px;
 }
+
+select.custom-chevron {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  -o-appearance: none;
+  appearance: none;
+  margin-left: -1px;
+}
+
+select.custom-chevron + i.fa {
+  float: right;
+  margin-top: -30px;
+  margin-right: 10px;
+  pointer-events: none;
+  background-color: transparent;
+  color: #abaaab;
+  padding-right: 5px;
+}
