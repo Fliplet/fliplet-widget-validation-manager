@@ -13,7 +13,7 @@ var defaultEmailSettings = {
   to: []
 };
 
-var defaultSmsTemplate = 'Your code: {{ code }} (it will expire in {{ expire }} minutes)';
+var defaultSmsTemplate = 'Your code: {{ code }} (it will expire in {{ expireDescription }})';
 
 // Default expire timeout 2 days
 var defaultExpireTimeout = 2880;
@@ -166,7 +166,7 @@ dsQueryProvider.then(function onForwardDsQueryProvider(result) {
       var domainsString = $('#email-domains').val().trim();
 
       if (domainsString) {
-        var domains = domainsString.split(',').map(function(domain) {
+        domains = domainsString.split(',').map(function(domain) {
           return domain.trim();
         });
       }
@@ -174,9 +174,6 @@ dsQueryProvider.then(function onForwardDsQueryProvider(result) {
       validation.email = {
         toColumn: result.data.columns.emailMatch,
         matchColumn: result.data.columns.emailMatch,
-
-        template: emailProviderResult || defaultEmailSettings,
-        expire: convertTimeToMinutes(),
         template: validation.email ? validation.email.template : defaultEmailSettings,
         expire: convertTimeToMinutes(),
         domain: domain,
@@ -209,7 +206,7 @@ $('.show-email-provider').on('click', function() {
       code: 'Insert the verification code <strong>(Required)</strong>',
       appName: 'Insert your app name',
       organisationName: 'insert your organisation name',
-      expire: 'Insert the expiration time of the verification code (in minutes)'
+      expire: 'Insert the expiration time of the verification code'
     },
     hideTo: true,
     hideBCC: true,
