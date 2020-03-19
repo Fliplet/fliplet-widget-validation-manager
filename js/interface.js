@@ -8,7 +8,7 @@ var $smsSettings = $('.sms-settings');
 
 var defaultEmailTemplate = $('#email-template-default').html();
 var defaultEmailSettings = {
-  subject: 'Validate your email address',
+  subject: 'Verify your email address',
   html: defaultEmailTemplate,
   to: []
 };
@@ -21,7 +21,6 @@ var dataSources;
 var dataSource;
 
 var emailProvider;
-var emailProviderResult;
 
 Fliplet.Widget.onSaveRequest(function() {
   if (!dataSource) {
@@ -136,7 +135,6 @@ var dsQueryProvider = Fliplet.Widget.open('com.fliplet.data-source-query', {
   onEvent: function(event, data) {
     if (event === 'data-source-changed') {
       selectDataSource(data);
-
       return true; // Stop propagation up to studio or parent components
     }
   }
@@ -176,7 +174,10 @@ dsQueryProvider.then(function onForwardDsQueryProvider(result) {
       validation.email = {
         toColumn: result.data.columns.emailMatch,
         matchColumn: result.data.columns.emailMatch,
+
         template: emailProviderResult || defaultEmailSettings,
+        expire: convertTimeToMinutes(),
+        template: validation.email ? validation.email.template : defaultEmailSettings,
         expire: convertTimeToMinutes(),
         domain: domain,
         domains: domains
@@ -201,7 +202,8 @@ dsQueryProvider.then(function onForwardDsQueryProvider(result) {
 
 // Click to edit email template should open email provider
 $('.show-email-provider').on('click', function() {
-  var emailProviderData = dataSource.definition && dataSource.definition.validation && dataSource.definition.validation.email && dataSource.definition.validation.email.template || defaultEmailSettings;
+  var emailProviderData = _.get(dataSource, 'definition.validation.email.template', defaultEmailSettings);
+
   emailProviderData.options = {
     usage: {
       code: 'Insert the verification code <strong>(Required)</strong>',
@@ -213,14 +215,28 @@ $('.show-email-provider').on('click', function() {
     hideBCC: true,
     hideCC: true
   };
+
   emailProvider = Fliplet.Widget.open('com.fliplet.email-provider', {
     data: emailProviderData
   });
 
+  Fliplet.Studio.emit('widget-save-label-update', {
+    text: 'Save'
+  });
+
   emailProvider.then(function onForwardEmailProvider(result) {
     emailProvider = null;
-    emailProviderResult = result.data;
+
+    var dataSourceTemplate = _.get(dataSource, 'definition.validation.email.template', false);
+
+    if (dataSourceTemplate) {
+      dataSource.definition.validation.email.template = result.data;
+    }
+
     Fliplet.Widget.autosize();
+    Fliplet.Studio.emit('widget-save-label-update', {
+      text: 'Save & Close'
+    });
   });
 });
 
