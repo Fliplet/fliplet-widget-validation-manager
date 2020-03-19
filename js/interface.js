@@ -14,7 +14,9 @@ var defaultEmailSettings = {
 };
 
 var defaultSmsTemplate = 'Your code: {{ code }} (it will expire in {{ expire }} minutes)';
-var defaultExpireTimeout = 60;
+
+// Default expire timeout 2 days
+var defaultExpireTimeout = 2880;
 var dataSources;
 var dataSource;
 
@@ -42,7 +44,7 @@ function selectDataSource(ds) {
   var email = dataSource.definition && dataSource.definition.validation && dataSource.definition.validation.email || {};
   // SMS and email validations use the same expiration values
   // Therefore the value only needs to be restored from the SMS configuration
-  $('#expire-timeout').val(sms.expire || email.expire || defaultExpireTimeout);
+  setReadableExpirePeriod(sms.expire || email.expire || defaultExpireTimeout);
   $('#sms-template').val(sms.template || defaultSmsTemplate);
 
   if (email.domain) {
@@ -51,6 +53,39 @@ function selectDataSource(ds) {
   }
 
   Fliplet.Widget.autosize();
+}
+
+// Converts minutes to hours or days or weeks
+function setReadableExpirePeriod (value) {
+  var timeInterval = '1';
+
+  if (value % 60 === 0 && value > 0) {
+    // Converts to hours
+    value = value / 60;
+    timeInterval = '60';
+
+    if (value % 24 === 0) {
+      // Converts to days
+      value = value / 24;
+      timeInterval = '1440';
+
+      if (value % 7 === 0) {
+        // Converts to weeks
+        value = value / 7;
+        timeInterval = '10080';
+      }
+    }
+  }
+
+  $('#expire-timeout').val(value);
+  $('#time-value').val(timeInterval);
+}
+
+// Converts time to minutes depending on selected hours or days or weeks
+function convertTimeToMinutes () {
+  var inputValue = $('#expire-timeout').val();
+  var selectValue = $('#time-value').val();
+  return inputValue * selectValue;
 }
 
 var dsQueryData = {};
@@ -120,7 +155,7 @@ dsQueryProvider.then(function onForwardDsQueryProvider(result) {
         toColumn: result.data.columns.smsTo,
         matchColumn: result.data.columns.smsMatch,
         template: $('#sms-template').val(),
-        expire: $('#expire-timeout').val(),
+        expire: convertTimeToMinutes(),
       };
       break;
 
@@ -139,8 +174,11 @@ dsQueryProvider.then(function onForwardDsQueryProvider(result) {
       validation.email = {
         toColumn: result.data.columns.emailMatch,
         matchColumn: result.data.columns.emailMatch,
+
+        template: emailProviderResult || defaultEmailSettings,
+        expire: convertTimeToMinutes(),
         template: validation.email ? validation.email.template : defaultEmailSettings,
-        expire: $('#expire-timeout').val(),
+        expire: convertTimeToMinutes(),
         domain: domain,
         domains: domains
       }
