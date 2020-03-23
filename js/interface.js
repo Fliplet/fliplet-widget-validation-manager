@@ -42,9 +42,13 @@ function selectDataSource(ds) {
 
   var sms = dataSource.definition && dataSource.definition.validation && dataSource.definition.validation.sms || {};
   var email = dataSource.definition && dataSource.definition.validation && dataSource.definition.validation.email || {};
-  // SMS and email validations use the same expiration values
-  // Therefore the value only needs to be restored from the SMS configuration
-  setReadableExpirePeriod(sms.expire || email.expire || defaultExpireTimeout);
+
+  if (data.type === 'email') {
+    setReadableExpirePeriod(email.expire || defaultExpireTimeout);
+  } else if (data.type === 'sms') {
+    setReadableExpirePeriod(sms.expire || defaultExpireTimeout);
+  }
+
   $('#sms-template').val(sms.template || defaultSmsTemplate);
 
   if (email.domain) {
