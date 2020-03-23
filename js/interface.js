@@ -246,6 +246,11 @@ $('#email-domain').on('change', function() {
   Fliplet.Widget.autosize();
 });
 
+// Preveting entering invalid values in the expiration input
+$('#expire-timeout').on('keydown', function(event) {
+  return event.keyCode === 8 || /[0-9]+/.test(event.key);
+});
+
 // Initialize data.
 if (data.type === 'sms') {
   $smsSettings.removeClass('hidden');
