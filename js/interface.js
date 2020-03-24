@@ -210,7 +210,7 @@ $('.show-email-provider').on('click', function() {
       code: 'Insert the verification code <strong>(Required)</strong>',
       appName: 'Insert your app name',
       organisationName: 'insert your organisation name',
-      expire: 'Insert the expiration time of the verification code'
+      expireDescription: 'Insert the expiration time of the verification code'
     },
     hideTo: true,
     hideBCC: true,
