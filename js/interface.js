@@ -23,7 +23,7 @@ var dataSource;
 var emailProvider;
 
 Fliplet.Widget.onSaveRequest(function() {
-  if (!dataSource) {
+  if (!dataSource || dataSource.value === null) {
     return Fliplet.Widget.save({});
   }
 
