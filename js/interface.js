@@ -203,6 +203,13 @@ dsQueryProvider.then(function onForwardDsQueryProvider(result) {
 
 // Click to edit email template should open email provider
 $('.show-email-provider').on('click', function() {
+  if (!dataSource || dataSource.value === null) {
+    Fliplet.Modal.alert({
+      message: 'Please select a data source to configure email template'
+    });
+    return;
+  }
+  
   var emailProviderData = _.get(dataSource, 'definition.validation.email.template', defaultEmailSettings);
 
   emailProviderData.options = {
