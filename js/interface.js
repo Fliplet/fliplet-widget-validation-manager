@@ -22,6 +22,14 @@ var dataSource;
 
 var emailProvider;
 
+Fliplet.Widget.onCancelRequest(function() {
+  emailProvider.close();
+  emailProvider = null;
+
+  Fliplet.Widget.toggleCancelButton(true);
+  Fliplet.Widget.resetSaveButtonLabel();
+});
+
 Fliplet.Widget.onSaveRequest(function() {
   if (!dataSource) {
     return Fliplet.Widget.save({});
@@ -227,6 +235,8 @@ $('.show-email-provider').on('click', function() {
   emailProvider = Fliplet.Widget.open('com.fliplet.email-provider', {
     data: emailProviderData
   });
+
+  Fliplet.Widget.toggleCancelButton(false);
 
   Fliplet.Studio.emit('widget-save-label-update', {
     text: 'Save'
