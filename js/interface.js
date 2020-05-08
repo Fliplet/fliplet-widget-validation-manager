@@ -31,7 +31,7 @@ Fliplet.Widget.onCancelRequest(function() {
 });
 
 Fliplet.Widget.onSaveRequest(function() {
-  if (!dataSource) {
+  if (!dataSource || dataSource.value === null) {
     return Fliplet.Widget.save({});
   }
 
