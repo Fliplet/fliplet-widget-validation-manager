@@ -1,7 +1,6 @@
 var widgetInstanceId = $('[data-widget-id]').data('widget-id');
 var data = Fliplet.Widget.getData(widgetInstanceId) || {};
 
-var $dataSource = $("#dataSource");
 var $expireTimeoutSettings = $('.expire-timeout-settings');
 var $emailSettings = $('.email-settings');
 var $smsSettings = $('.sms-settings');
@@ -17,7 +16,6 @@ var defaultSmsTemplate = 'Your code: {{ code }} (it will expire in {{ expireDesc
 
 // Default expire timeout 2 days
 var defaultExpireTimeout = 2880;
-var dataSources;
 var dataSource;
 
 var emailProvider;
@@ -42,9 +40,8 @@ Fliplet.Widget.onSaveRequest(function() {
   return dsQueryProvider.forwardSaveRequest();
 });
 
-/**
- * Set current data source and fill in fields
- */
+// Set current data source and fill in fields
+
 function selectDataSource(ds) {
   dataSource = ds;
 
@@ -68,7 +65,7 @@ function selectDataSource(ds) {
 }
 
 // Converts minutes to hours or days or weeks
-function setReadableExpirePeriod (value) {
+function setReadableExpirePeriod(value) {
   var timeInterval = '1';
 
   if (value % 60 === 0 && value > 0) {
@@ -94,7 +91,7 @@ function setReadableExpirePeriod (value) {
 }
 
 // Converts time to minutes depending on selected hours or days or weeks
-function convertTimeToMinutes () {
+function convertTimeToMinutes() {
   var inputValue = $('#expire-timeout').val();
   var selectValue = $('#time-value').val();
   return inputValue * selectValue;
@@ -108,16 +105,15 @@ switch (data.type) {
         dataSourceLabel: 'Select the data source containing the user information',
         filters: false,
         columns: [{
-            key: 'smsMatch',
-            label: 'Select the column with the email address',
-            type: 'single'
-          },
-          {
-            key: 'smsTo',
-            label: 'Select the column with the phone number (where the SMS will be sent to)',
-            type: 'single'
-          }
-        ]
+          key: 'smsMatch',
+          label: 'Select the column with the email address',
+          type: 'single'
+        },
+        {
+          key: 'smsTo',
+          label: 'Select the column with the phone number (where the SMS will be sent to)',
+          type: 'single'
+        }]
       },
       result: data.dataSourceQuery
     };
@@ -167,14 +163,14 @@ dsQueryProvider.then(function onForwardDsQueryProvider(result) {
         toColumn: result.data.columns.smsTo,
         matchColumn: result.data.columns.smsMatch,
         template: $('#sms-template').val(),
-        expire: convertTimeToMinutes(),
+        expire: convertTimeToMinutes()
       };
       break;
 
     case 'email':
       // Domains should be comma separated
       var domains = [];
-      var domain = $('#email-domain').is(":checked");
+      var domain = $('#email-domain').is(':checked');
       var domainsString = $('#email-domains').val().trim();
 
       if (domainsString) {
@@ -190,7 +186,9 @@ dsQueryProvider.then(function onForwardDsQueryProvider(result) {
         expire: convertTimeToMinutes(),
         domain: domain,
         domains: domains
-      }
+      };
+      break;
+    default:
       break;
   }
   // Update data source definitions
@@ -206,7 +204,7 @@ dsQueryProvider.then(function onForwardDsQueryProvider(result) {
 
       // Save
       Fliplet.Widget.save(data);
-    })
+    });
 });
 
 // Click to edit email template should open email provider
@@ -217,7 +215,7 @@ $('.show-email-provider').on('click', function() {
     });
     return;
   }
-  
+
   var emailProviderData = _.get(dataSource, 'definition.validation.email.template', defaultEmailSettings);
 
   emailProviderData.options = {
