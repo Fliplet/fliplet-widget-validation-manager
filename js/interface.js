@@ -103,7 +103,7 @@ switch (data.type) {
     dsQueryData = {
       settings: {
         dataSourceLabel: 'Select the data source containing the user information',
-        dataSourceSubtitle: 'SMS verification data for ' + Fliplet.Env.get('appName'),
+        defaultDataSourceName: 'SMS verification data for ' + Fliplet.Env.get('appName'),
         filters: false,
         columns: [{
           key: 'smsMatch',
@@ -125,7 +125,7 @@ switch (data.type) {
     dsQueryData = {
       settings: {
         dataSourceLabel: 'Select the data source containing the user information',
-        dataSourceSubtitle: 'Email verification data for ' + Fliplet.Env.get('appName'),
+        defaultDataSourceName: 'Email verification data for ' + Fliplet.Env.get('appName'),
         filters: false,
         columns: [{
           key: 'emailMatch',
