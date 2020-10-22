@@ -124,6 +124,7 @@ switch (data.type) {
     dsQueryData = {
       settings: {
         dataSourceLabel: 'Select the data source containing the user information',
+        dataSourceSubtitle: 'Email verification 0000',
         filters: false,
         columns: [{
           key: 'emailMatch',
