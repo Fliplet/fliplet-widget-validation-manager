@@ -102,8 +102,10 @@ switch (data.type) {
   case 'sms':
     dsQueryData = {
       settings: {
-        dataSourceLabel: 'Select the data source containing the user information',
-        defaultDataSourceName: 'SMS verification data for ' + Fliplet.Env.get('appName'),
+        dataSourceTitle: 'Select the data source containing the user information',
+        default: {
+          name: 'User data for ' + Fliplet.Env.get('appName')
+        },
         filters: false,
         columns: [{
           key: 'smsMatch',
@@ -124,8 +126,10 @@ switch (data.type) {
   default:
     dsQueryData = {
       settings: {
-        dataSourceLabel: 'Select the data source containing the user information',
-        defaultDataSourceName: 'Email verification data for ' + Fliplet.Env.get('appName'),
+        dataSourceTitle: 'Select the data source containing the user information',
+        default: {
+          name: 'User data for ' + Fliplet.Env.get('appName')
+        },
         filters: false,
         columns: [{
           key: 'emailMatch',
@@ -139,7 +143,7 @@ switch (data.type) {
 }
 
 // Open data source query provider inline
-var dsQueryProvider = Fliplet.Widget.open('com.fliplet.data-source-query', {
+var dsQueryProvider = Fliplet.Widget.open('com.fliplet.data-source-query-andrey', {
   selector: '.data-source-query-provider',
   data: dsQueryData,
   onEvent: function(event, data) {
