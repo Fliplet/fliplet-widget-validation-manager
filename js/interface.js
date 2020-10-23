@@ -143,7 +143,7 @@ switch (data.type) {
 }
 
 // Open data source query provider inline
-var dsQueryProvider = Fliplet.Widget.open('com.fliplet.data-source-query-andrey', {
+var dsQueryProvider = Fliplet.Widget.open('com.fliplet.data-source-query', {
   selector: '.data-source-query-provider',
   data: dsQueryData,
   onEvent: function(event, data) {
