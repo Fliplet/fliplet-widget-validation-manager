@@ -102,7 +102,7 @@ switch (data.type) {
   case 'sms':
     dsQueryData = {
       settings: {
-        dataSourceTitle: 'Select the data source containing the user information',
+        dataSourceTitle: 'User list data source',
         default: {
           name: 'User data for ' + Fliplet.Env.get('appName')
         },
@@ -126,7 +126,7 @@ switch (data.type) {
   default:
     dsQueryData = {
       settings: {
-        dataSourceTitle: 'Select the data source containing the user information',
+        dataSourceTitle: 'User list data source',
         default: {
           name: 'User data for ' + Fliplet.Env.get('appName')
         },
