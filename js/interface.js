@@ -102,7 +102,10 @@ switch (data.type) {
   case 'sms':
     dsQueryData = {
       settings: {
-        dataSourceLabel: 'Select the data source containing the user information',
+        dataSourceTitle: 'User list data source',
+        default: {
+          name: 'User data for ' + Fliplet.Env.get('appName')
+        },
         filters: false,
         columns: [{
           key: 'smsMatch',
@@ -123,7 +126,10 @@ switch (data.type) {
   default:
     dsQueryData = {
       settings: {
-        dataSourceLabel: 'Select the data source containing the user information',
+        dataSourceTitle: 'User list data source',
+        default: {
+          name: 'User data for ' + Fliplet.Env.get('appName')
+        },
         filters: false,
         columns: [{
           key: 'emailMatch',
