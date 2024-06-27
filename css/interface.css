@@ -174,3 +174,7 @@ select.custom-chevron + i.fa {
   font-size: 1.14em;
   margin-bottom: 5px;
 }
+
+.callout-holder {
+  padding-left: 25px;
+}
