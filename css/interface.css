@@ -31,7 +31,7 @@ body {
 
 .form-group .btn-default {
   color: #333;
-  background-color: #FFF;
+  background-color: #fff;
   border: 1px solid #e4e9eb;
   border-bottom-width: 2px;
   border-radius: 6px;
@@ -45,7 +45,7 @@ body {
 }
 
 .form-group .btn-default:active:focus {
-  color: #FFF;
+  color: #fff;
   background-color: #0087a6;
   border-color: #0087a6;
 }
@@ -89,7 +89,7 @@ body {
 }
 
 .info-holder .btn-link.text-danger {
-  color: #E03629 !important;
+  color: #e03629 !important;
 }
 
 .info-holder .btn-link.text-danger:active:focus,
@@ -159,4 +159,22 @@ select.custom-chevron + i.fa {
   background-color: transparent;
   color: #abaaab;
   padding-right: 5px;
+}
+
+.checkbox.disabled {
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+.callout.callout-sm {
+  font-size: 1.1rem;
+}
+
+.callout.callout-sm h4 {
+  font-size: 1.14em;
+  margin-bottom: 5px;
+}
+
+.callout-holder {
+  padding-left: 25px;
 }

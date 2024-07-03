@@ -20,6 +20,11 @@ var dataSource;
 
 var emailProvider;
 
+if (!data.isPublicApp) {
+  $('.custom-domains').removeClass('disabled');
+  $('#custom-domains-alert').addClass('hidden');
+}
+
 Fliplet.Widget.onCancelRequest(function() {
   emailProvider.close();
   emailProvider = null;
@@ -94,10 +99,12 @@ function setReadableExpirePeriod(value) {
 function convertTimeToMinutes() {
   var inputValue = $('#expire-timeout').val();
   var selectValue = $('#time-value').val();
+
   return inputValue * selectValue;
 }
 
 var dsQueryData = {};
+
 switch (data.type) {
   case 'sms':
     dsQueryData = {
@@ -149,6 +156,7 @@ var dsQueryProvider = Fliplet.Widget.open('com.fliplet.data-source-query', {
   onEvent: function(event, data) {
     if (event === 'data-source-changed') {
       selectDataSource(data);
+
       return true; // Stop propagation up to studio or parent components
     }
   }
@@ -176,8 +184,8 @@ dsQueryProvider.then(function onForwardDsQueryProvider(result) {
     case 'email':
       // Domains should be comma separated
       var domains = [];
-      var domain = $('#email-domain').is(':checked');
-      var domainsString = $('#email-domains').val().trim();
+      var domain = !data.isPublicApp ? $('#email-domain').is(':checked') : false;
+      var domainsString = !data.isPublicApp ? $('#email-domains').val().trim() : '';
 
       if (domainsString) {
         domains = domainsString.split(',').map(function(domain) {
@@ -197,6 +205,7 @@ dsQueryProvider.then(function onForwardDsQueryProvider(result) {
     default:
       break;
   }
+
   // Update data source definitions
   var options = {
     id: result.data.dataSourceId,
@@ -204,6 +213,7 @@ dsQueryProvider.then(function onForwardDsQueryProvider(result) {
       validation: validation
     }
   };
+
   Fliplet.DataSources.update(options)
     .then(function() {
       data.dataSourceQuery = result.data;
@@ -219,6 +229,7 @@ $('.show-email-provider').on('click', function() {
     Fliplet.Modal.alert({
       message: 'Please select a data source to configure email template'
     });
+
     return;
   }
 
@@ -268,6 +279,7 @@ $('#email-domain').on('change', function() {
   } else {
     $('.email-domains-input').addClass('hidden');
   }
+
   Fliplet.Widget.autosize();
 });
 
@@ -276,10 +288,31 @@ $('#expire-timeout').on('keydown', function(event) {
   return event.keyCode === 8 || /[0-9]+/.test(event.key);
 });
 
+// Open the billing section in the app settings overlay
+$('.upgrade-plan').on('click', function() {
+  Fliplet.Studio.emit('overlay', {
+    name: 'app-settings',
+    options: {
+      size: 'large',
+      title: 'App Settings',
+      appId: Fliplet.Env.get('appId'),
+      section: 'appBilling',
+      helpLink: 'https://help.fliplet.com/app-settings/'
+    }
+  });
+
+  Fliplet.Studio.emit('track-event', {
+    category: 'app_billing',
+    action: 'open_overlay',
+    context: 'email_validation_component'
+  });
+});
+
 // Initialize data.
 if (data.type === 'sms') {
   $smsSettings.removeClass('hidden');
 } else {
   $emailSettings.removeClass('hidden');
 }
+
 $expireTimeoutSettings.removeClass('hidden');

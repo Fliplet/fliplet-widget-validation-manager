@@ -30,11 +30,20 @@
 
     <div class="form-group clearfix">
       <div class="col-sm-12">
-        <div class="checkbox checkbox-icon">
+        <div class="checkbox checkbox-icon custom-domains disabled">
           <input type="checkbox" id="email-domain">
           <label for="email-domain">
             <span class="check"><i class="fa fa-check"></i></span> Allow emails from specific domains
           </label>
+        </div>
+        <div class="callout-holder">
+          <div class="callout callout-warning callout-upgrade callout-sm" id="custom-domains-alert">
+            <div class="callout-body">
+              <h4>This feature is not available on your app plan.</h4>
+              <p class="description">Explore our plans and upgrade to unlock this feature.</p>
+            </div>
+            <div class="btn btn-warning upgrade-plan">Upgrade</div>
+          </div>
         </div>
       </div>
     </div>
