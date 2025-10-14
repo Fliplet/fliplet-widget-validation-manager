@@ -13,6 +13,7 @@
     "dependencies": [
       "fliplet-core",
       "fliplet-studio-ui",
+      "fliplet-utils",
       "fliplet-datasources",
       "bootstrap",
       "tinymce",
