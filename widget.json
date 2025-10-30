@@ -16,8 +16,7 @@
       "fliplet-utils",
       "fliplet-datasources",
       "bootstrap",
-      "tinymce",
-      "lodash"
+      "tinymce"
     ],
     "assets": [
       "js/interface.js",
