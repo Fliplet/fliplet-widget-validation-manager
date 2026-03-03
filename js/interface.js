@@ -233,7 +233,7 @@ $('.show-email-provider').on('click', function() {
     return;
   }
 
-  var emailProviderData = _.get(dataSource, 'definition.validation.email.template', defaultEmailSettings);
+  var emailProviderData = Fliplet.Utils.get(dataSource, 'definition.validation.email.template', defaultEmailSettings);
 
   emailProviderData.options = {
     usage: {
@@ -260,7 +260,7 @@ $('.show-email-provider').on('click', function() {
   emailProvider.then(function onForwardEmailProvider(result) {
     emailProvider = null;
 
-    var dataSourceTemplate = _.get(dataSource, 'definition.validation.email.template', false);
+    var dataSourceTemplate = Fliplet.Utils.get(dataSource, 'definition.validation.email.template', false);
 
     if (dataSourceTemplate) {
       dataSource.definition.validation.email.template = result.data;
